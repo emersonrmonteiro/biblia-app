@@ -1,0 +1,94 @@
+name: biblia_app
+description: "A new Flutter project."
+
+publish_to: "none"
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/versoes/a-mensagem/velho-testamento/1cronicas/
+    - assets/versoes/a-mensagem/velho-testamento/1reis/
+    - assets/versoes/a-mensagem/velho-testamento/1samuel/
+    - assets/versoes/a-mensagem/velho-testamento/2cronicas/
+    - assets/versoes/a-mensagem/velho-testamento/2samuel/
+    - assets/versoes/a-mensagem/velho-testamento/2reis/
+    - assets/versoes/a-mensagem/velho-testamento/ageu/
+    - assets/versoes/a-mensagem/velho-testamento/amos/
+    - assets/versoes/a-mensagem/velho-testamento/cantares/
+    - assets/versoes/a-mensagem/velho-testamento/daniel/
+    - assets/versoes/a-mensagem/velho-testamento/deuteronomio/
+    - assets/versoes/a-mensagem/velho-testamento/eclesiastes/
+    - assets/versoes/a-mensagem/velho-testamento/esdras/
+    - assets/versoes/a-mensagem/velho-testamento/ester/
+    - assets/versoes/a-mensagem/velho-testamento/exodo/
+    - assets/versoes/a-mensagem/velho-testamento/ezequiel/
+    - assets/versoes/a-mensagem/velho-testamento/genesis/
+    - assets/versoes/a-mensagem/velho-testamento/habacuque/
+    - assets/versoes/a-mensagem/velho-testamento/isaias/
+    - assets/versoes/a-mensagem/velho-testamento/jeremias/
+    - assets/versoes/a-mensagem/velho-testamento/jo/
+    - assets/versoes/a-mensagem/velho-testamento/joel/
+    - assets/versoes/a-mensagem/velho-testamento/jonas/
+    - assets/versoes/a-mensagem/velho-testamento/josue/
+    - assets/versoes/a-mensagem/velho-testamento/juizes/
+    - assets/versoes/a-mensagem/velho-testamento/lamentacoes/
+    - assets/versoes/a-mensagem/velho-testamento/levitico/
+    - assets/versoes/a-mensagem/velho-testamento/malaquias/
+    - assets/versoes/a-mensagem/velho-testamento/miqueias/
+    - assets/versoes/a-mensagem/velho-testamento/naum/
+    - assets/versoes/a-mensagem/velho-testamento/neemias/
+    - assets/versoes/a-mensagem/velho-testamento/numeros/
+    - assets/versoes/a-mensagem/velho-testamento/obadias/
+    - assets/versoes/a-mensagem/velho-testamento/oseias/
+    - assets/versoes/a-mensagem/velho-testamento/proverbios/
+    - assets/versoes/a-mensagem/velho-testamento/rute/
+    - assets/versoes/a-mensagem/velho-testamento/salmos/
+    - assets/versoes/a-mensagem/velho-testamento/sofonias/
+    - assets/versoes/a-mensagem/velho-testamento/zacarias/
+    - assets/versoes/a-mensagem/novo-testamento/1corintios/
+    - assets/versoes/a-mensagem/novo-testamento/1joao/
+    - assets/versoes/a-mensagem/novo-testamento/1pedro/
+    - assets/versoes/a-mensagem/novo-testamento/1tessalonicenses/
+    - assets/versoes/a-mensagem/novo-testamento/1timoteo/
+    - assets/versoes/a-mensagem/novo-testamento/2corintios/
+    - assets/versoes/a-mensagem/novo-testamento/2joao/
+    - assets/versoes/a-mensagem/novo-testamento/2pedro/
+    - assets/versoes/a-mensagem/novo-testamento/2tessalonicenses/
+    - assets/versoes/a-mensagem/novo-testamento/2timoteo/
+    - assets/versoes/a-mensagem/novo-testamento/3joao/
+    - assets/versoes/a-mensagem/novo-testamento/apocalipse/
+    - assets/versoes/a-mensagem/novo-testamento/atos/
+    - assets/versoes/a-mensagem/novo-testamento/colossenses/
+    - assets/versoes/a-mensagem/novo-testamento/efesios/
+    - assets/versoes/a-mensagem/novo-testamento/filemon/
+    - assets/versoes/a-mensagem/novo-testamento/filipenses/
+    - assets/versoes/a-mensagem/novo-testamento/galatas/
+    - assets/versoes/a-mensagem/novo-testamento/hebreus/
+    - assets/versoes/a-mensagem/novo-testamento/joao/
+    - assets/versoes/a-mensagem/novo-testamento/judas/
+    - assets/versoes/a-mensagem/novo-testamento/lucas/
+    - assets/versoes/a-mensagem/novo-testamento/marcos/
+    - assets/versoes/a-mensagem/novo-testamento/mateus/
+    - assets/versoes/a-mensagem/novo-testamento/romanos/
+    - assets/versoes/a-mensagem/novo-testamento/tiago/
+    - assets/versoes/a-mensagem/novo-testamento/tito/
+    - assets/livros.json
