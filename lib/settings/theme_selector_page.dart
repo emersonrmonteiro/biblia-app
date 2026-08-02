@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../services/reading_preferences_service.dart';
 import '../themes/themes.dart';
 
 class ThemeSettingsPage extends StatefulWidget {
   final String selectedThemeName;
   final bool isDarkMode;
+  final double initialFontSize;
   final void Function(String themeName, bool isDark, double fontSize) onApply;
 
   const ThemeSettingsPage({
     super.key,
     required this.selectedThemeName,
     required this.isDarkMode,
+    required this.initialFontSize,
     required this.onApply,
   });
 
@@ -21,13 +24,26 @@ class ThemeSettingsPage extends StatefulWidget {
 class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
   late String _selectedThemeName;
   late bool _isDarkMode;
-  double _fontSize = 16.0;
+  late double _fontSize;
+  bool _showDualLanguage = false;
 
   @override
   void initState() {
     super.initState();
     _selectedThemeName = widget.selectedThemeName;
     _isDarkMode = widget.isDarkMode;
+    _fontSize = widget.initialFontSize;
+    _loadDualLanguagePref();
+  }
+
+  Future<void> _loadDualLanguagePref() async {
+    final value = await ReadingPreferencesService.getShowDualLanguage();
+    if (mounted) setState(() => _showDualLanguage = value);
+  }
+
+  Future<void> _onApply() async {
+    await ReadingPreferencesService.setShowDualLanguage(_showDualLanguage);
+    widget.onApply(_selectedThemeName, _isDarkMode, _fontSize);
   }
 
   @override
@@ -37,16 +53,20 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
       orElse: () => appThemes[0],
     );
     final previewTheme = _isDarkMode ? selectedTheme.dark : selectedTheme.light;
+    final secondaryFontSize = _fontSize - 2;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Configurações de Tema')),
+      appBar: AppBar(title: const Text('Aparência')),
       body: Column(
         children: [
+          // ── Dark mode ──────────────────────────────────────────────────────
           SwitchListTile(
             title: const Text('Tema Escuro'),
             value: _isDarkMode,
             onChanged: (val) => setState(() => _isDarkMode = val),
           ),
+
+          // ── Theme color list ───────────────────────────────────────────────
           Expanded(
             child: ListView.builder(
               itemCount: appThemes.length,
@@ -64,6 +84,10 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
               },
             ),
           ),
+
+          const Divider(height: 1),
+
+          // ── Font size ──────────────────────────────────────────────────────
           ListTile(
             title: const Text('Tamanho da Fonte'),
             subtitle: Slider(
@@ -75,15 +99,38 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
               onChanged: (val) => setState(() => _fontSize = val),
             ),
           ),
-          const SizedBox(height: 10),
-          Text('Prévia', style: Theme.of(context).textTheme.titleMedium),
+
+          // ── Dual language toggle ───────────────────────────────────────────
+          SwitchListTile(
+            secondary: const Icon(Icons.translate_rounded),
+            title: const Text('Exibir versículo duplo'),
+            subtitle: const Text(
+              'Mostra o versículo secundário abaixo de cada versículo',
+            ),
+            value: _showDualLanguage,
+            onChanged: (val) => setState(() => _showDualLanguage = val),
+          ),
+
+          const SizedBox(height: 8),
+
+          // ── Preview ────────────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Prévia',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+          ),
           Container(
-            margin: const EdgeInsets.all(16),
+            margin: const EdgeInsets.fromLTRB(16, 8, 16, 16),
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               color: previewTheme.cardColor,
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
                   color: Colors.black26,
                   blurRadius: 4,
@@ -94,22 +141,51 @@ class _ThemeSettingsPageState extends State<ThemeSettingsPage> {
             child: Theme(
               data: previewTheme,
               child: Builder(
-                builder: (context) => Text(
-                  'No princípio, Deus criou os céus e a terra. A terra era sem forma e vazia.',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(fontSize: _fontSize),
-                  textAlign: TextAlign.justify,
+                builder: (ctx) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Primary verse preview
+                    Text(
+                      '1 No princípio, Deus criou os céus e a terra.',
+                      style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
+                        fontSize: _fontSize,
+                        height: 1.8,
+                      ),
+                      textAlign: TextAlign.justify,
+                    ),
+                    // Secondary verse preview (only when toggle is on)
+                    if (_showDualLanguage) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        'In the beginning God created the heavens and the earth.',
+                        style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
+                          fontSize: secondaryFontSize,
+                          height: 1.6,
+                          fontStyle: FontStyle.italic,
+                          color: Theme.of(
+                            ctx,
+                          ).colorScheme.onSurface.withAlpha(140),
+                        ),
+                        textAlign: TextAlign.justify,
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),
           ),
-          ElevatedButton(
-            onPressed: () =>
-                widget.onApply(_selectedThemeName, _isDarkMode, _fontSize),
-            child: const Text('Aplicar'),
+
+          // ── Apply button ───────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _onApply,
+                child: const Text('Aplicar'),
+              ),
+            ),
           ),
-          const SizedBox(height: 16),
         ],
       ),
     );

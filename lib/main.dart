@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'models/bible_version.dart';
+import 'models/language_config.dart';
 import 'pages/livros_page.dart';
-import 'services/bible_version_service.dart';
+import 'services/language_service.dart';
 import 'settings/theme_selector_page.dart';
 import 'themes/themes.dart';
 
@@ -19,10 +19,14 @@ class BibliaApp extends StatefulWidget {
 }
 
 class _BibliaAppState extends State<BibliaApp> {
-  String _currentThemeKey = 'Claro';
+  String _currentThemeKey = 'Green';
   bool _isDarkMode = false;
   ThemeData _currentTheme = appThemes[0].light;
-  BibleVersion _selectedVersion = availableVersions.first;
+  double _fontSize = 16.0;
+  LanguageConfig _languageConfig = LanguageConfig(
+    primaryTranslation: LanguageService.defaultPrimary,
+    secondaryTranslation: LanguageService.defaultSecondary,
+  );
 
   @override
   void initState() {
@@ -32,25 +36,26 @@ class _BibliaAppState extends State<BibliaApp> {
 
   Future<void> _loadPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    final themeKey = prefs.getString('selectedTheme') ?? 'Verde';
+    final themeKey = prefs.getString('selectedTheme') ?? 'Green';
     final isDark = prefs.getBool('isDarkMode') ?? false;
     final savedFontSize = prefs.getDouble('fontSize') ?? 16.0;
 
-    final theme = appThemes.firstWhere((t) => t.name == themeKey);
+    final theme = appThemes.firstWhere(
+      (t) => t.name == themeKey,
+      orElse: () => appThemes[0],
+    );
     final selectedTheme = isDark ? theme.dark : theme.light;
 
-    final version = await BibleVersionService.getSelectedVersion();
+    final langConfig = await LanguageService.getLanguageConfig();
 
     setState(() {
       _currentThemeKey = themeKey;
       _isDarkMode = isDark;
       _fontSize = savedFontSize;
       _currentTheme = selectedTheme;
-      _selectedVersion = version;
+      _languageConfig = langConfig;
     });
   }
-
-  double _fontSize = 16.0;
 
   Future<void> _changeTheme(
     String themeName,
@@ -62,7 +67,10 @@ class _BibliaAppState extends State<BibliaApp> {
     await prefs.setBool('isDarkMode', isDark);
     await prefs.setDouble('fontSize', fontSize);
 
-    final theme = appThemes.firstWhere((t) => t.name == themeName);
+    final theme = appThemes.firstWhere(
+      (t) => t.name == themeName,
+      orElse: () => appThemes[0],
+    );
     final selectedTheme = isDark ? theme.dark : theme.light;
 
     setState(() {
@@ -77,7 +85,7 @@ class _BibliaAppState extends State<BibliaApp> {
     final textTheme = baseTheme.textTheme;
 
     return baseTheme.copyWith(
-      textTheme: TextTheme(
+      textTheme: textTheme.copyWith(
         bodySmall: textTheme.bodySmall?.copyWith(fontSize: fontSize),
         bodyMedium: textTheme.bodyMedium?.copyWith(fontSize: fontSize),
         bodyLarge: textTheme.bodyLarge?.copyWith(fontSize: fontSize),
@@ -94,8 +102,12 @@ class _BibliaAppState extends State<BibliaApp> {
       title: 'Bíblia App',
       theme: applyFontSize(_currentTheme, _fontSize),
       home: LivrosPage(
-        selectedVersion: _selectedVersion,
-        onChangeVersion: _changeVersion,
+        languageConfig: _languageConfig,
+        onChangeLanguageConfig: (config) {
+          setState(() {
+            _languageConfig = config;
+          });
+        },
         onToggleTheme: (context) {
           Navigator.push(
             context,
@@ -103,6 +115,7 @@ class _BibliaAppState extends State<BibliaApp> {
               builder: (_) => ThemeSettingsPage(
                 selectedThemeName: _currentThemeKey,
                 isDarkMode: _isDarkMode,
+                initialFontSize: _fontSize,
                 onApply: (themeName, isDark, fontSize) {
                   _changeTheme(themeName, isDark, fontSize);
                   Navigator.pop(context);
@@ -113,12 +126,5 @@ class _BibliaAppState extends State<BibliaApp> {
         },
       ),
     );
-  }
-
-  Future<void> _changeVersion(BibleVersion version) async {
-    await BibleVersionService.setSelectedVersion(version.id);
-    setState(() {
-      _selectedVersion = version;
-    });
   }
 }
